@@ -7,3 +7,11 @@ Among all the processes there is a daemon process, which tries to corrupt log fi
     2. The system has to recover from this. <br/>
     3. Use any error recovery approaches to go back to the previous points. (Maintain a log for this) <br/>
     4. Daemon process should be blocked.<br/>
+<br/>
+# Instructions to execute from terminal/ commandline 
+<br/>
+
+ execute the following command from src directory: <br/>
+	<br/>
+	for starting up Server : java main.SocketServer<br/>
+	for starting up Client : java main.SocketClient<br/>
