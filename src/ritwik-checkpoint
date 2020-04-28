@@ -1,6 +1,12 @@
 
-User signed up at 2020.04.28.11.43.43
+User signed up at 2020.04.28.18.21.14
 Transaction Successful received amount:200  from  chaitya 
- TimeStamp : 2020.04.28.11.44.43
-Transaction Successful Transfered amount:200  to chaitya 
- TimeStamp : 2020.04.28.11.46.03
+ TimeStamp : 2020.04.28.18.21.45
+Transaction Successful Transfered amount:300  to chaitya 
+ TimeStamp : 2020.04.28.18.21.59
+(ErrorRecovery) Transaction Successful received amount:200  from  ritwik 
+ TimeStamp : 2020.04.28.18.22.56
+(ErrorRecovery) Transaction Successful received amount:300  from  chaitya 
+ TimeStamp : 2020.04.28.18.22.56
+Transaction Successful received amount:600  from  kapeel 
+ TimeStamp : 2020.04.28.18.24.50
