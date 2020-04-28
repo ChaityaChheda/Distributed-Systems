@@ -1,10 +1,12 @@
 
-User signed up at 2020.04.28.18.21.29
-Transaction Successful Transfered amount:200  to ritwik 
- TimeStamp : 2020.04.28.18.21.45
-Transaction Successful received amount:300  from  ritwik 
- TimeStamp : 2020.04.28.18.21.59
-(ErrorRecovery) Transaction Successful received amount:200  from  ritwik 
- TimeStamp : 2020.04.28.18.22.56
-(ErrorRecovery) Transaction Successful received amount:300  from  chaitya 
- TimeStamp : 2020.04.28.18.22.56
+User signed up at 2020.04.28.23.47.53
+Transaction Successful received amount:1000  from  deval 
+ TimeStamp : 2020.04.28.23.48.34
+Transaction Successful received amount:200  from  deval 
+ TimeStamp : 2020.04.28.23.49.11
+(ErrorRecovery) Transaction Successful Transfered amount:200  to deval 
+ TimeStamp : 2020.04.28.23.49.45
+(ErrorRecovery) Transaction Successful Transfered amount:1000  to deval 
+ TimeStamp : 2020.04.28.23.49.45
+Current Balance is: 1000 
+ TimeStamp : 2020.04.28.23.51.12

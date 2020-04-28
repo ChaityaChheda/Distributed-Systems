@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Map;
-
+import java.util.List;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
@@ -208,15 +208,23 @@ public class ClientHandler extends Thread {
 
 						BufferedReader reader1 = new BufferedReader(new FileReader(username+"-checkpoint"));
 
+						List<String> lines =  new ArrayList<String>(); 
 						String line1 = reader1.readLine();
+
 
 						System.out.println("line "+line1);
          
 						while(line1 != null){
 
-							System.out.println("line "+line1);
+							lines.add(line1);
+							line1 = reader1.readLine();
+						}
 
-							String[] words = line1.split("\\s+");
+
+						for(int i=lines.size()-1;i>=0;i--){
+							System.out.println("line "+lines.get(i));
+
+							String[] words = lines.get(i).split("\\s+");
 							if( words[0].equals("Transaction")){
 
 								String[] amt = words[3].split(":");
@@ -227,12 +235,12 @@ public class ClientHandler extends Thread {
 
 									executeTransaction(receiver,username,amount,"ErrorRecovery");
 								}
-								if( words[2].equals("received")  ){
+								else if( words[2].equals("received")  ){
 									executeTransaction(username,receiver, amount,"ErrorRecovery");
 								}
 
 							}
-							line1 = reader1.readLine();
+
 						}
 
 						System.out.println("ErrorRecovery done successfully");
@@ -280,10 +288,10 @@ public class ClientHandler extends Thread {
 
     private synchronized void executeTransaction(String sender,String receiver,int amount,String label) throws IOException{
     	
-    	if(client.debit(amount, receiver,label))
+    	if(clients_map.get(sender).debit(amount, receiver,label))
     	{
     		clients_map.get(receiver).credit(amount, sender,label);
-    		clients_map.put(sender, client);
+    		clients_map.put(sender, clients_map.get(sender));
     	}
     	
     	
