@@ -70,6 +70,8 @@ public class ClientHandler extends Thread {
 			if(clients_map.containsKey(username))
 			{
 				client = clients_map.get(username);
+				System.out.println(username + " has logged in to the system at " + sdf.format(timestamp));
+
 				sent = "Hello " + username + "\nWelcome back.\n";
 				BufferedWriter writer1 = new BufferedWriter(
                 	new FileWriter(username+"-server", true)  //Set true for append mode
@@ -82,6 +84,8 @@ public class ClientHandler extends Thread {
 			{
 				client = new Client(username,1000, false);
 				clients_map.put(username, client);	
+				System.out.println(username + " has signed up into the system at " + sdf.format(timestamp));
+
 				sent = "Hello " + username + "\nInitiated your Bank Account.\n";
 				//File file = new File(username+"-server");
 				BufferedWriter writer1 = new BufferedWriter(
@@ -124,8 +128,12 @@ public class ClientHandler extends Thread {
 					received = dis.readUTF();
 					String[] queries = received.split("\\s+");
 
+
 					executeTransaction(username, queries[0],Integer.parseInt(queries[1]),"Normal");
 					
+
+					sent = "Transaction Complete.\n";
+
 					sent = sent + getuserPrompt();
 					dos.writeUTF(sent);
 					
@@ -251,6 +259,7 @@ public class ClientHandler extends Thread {
 				}
 				else if(received.equals("5"))
 				{
+					logUserOut();
 					this.dis.close(); 
 			        this.dos.close(); 
 			        break;
@@ -262,7 +271,9 @@ public class ClientHandler extends Thread {
 		catch(IOException e)
 		{ 
 			boolean isWritten = util.writeMaptoFile(clients_map);
-	        System.out.println("exception occured here" + isWritten); 
+	        // System.out.println("exception occured here" + isWritten); 
+	     	System.out.println("");
+	        logUserOut();
 	    } 
     }
 
@@ -318,12 +329,16 @@ public class ClientHandler extends Thread {
     String getMsgs(){
 
     	String[] msgs = clients_map.get(username).checkNewMsg().split("-");
-    	System.out.println(clients_map.get(username).checkNewMsg());
-    	String retval="";
+    	// System.out.println(clients_map.get(username).checkNewMsg());
+    	System.out.println(username + " - Notifications : ");
+    	String retval="\n";
     	int i;
-    	for(i =0;i<msgs.length;i++){
+    	// msg[0] is always blank that is why started  with 1.
+    	for(i =1;i<msgs.length;i++){
+    		System.out.print("--->" + msgs[i] +"\n");
     		retval = retval + msgs[i] +"\n";
     	}
+    	// System.out.println("\t" + retval);
     	return retval;
     }
     
@@ -332,7 +347,7 @@ public class ClientHandler extends Thread {
     
     public String getuserPrompt()
     {
-    	return "\n Choose from the options below(Type the option ID shown below) \n" +
+    	return "\nChoose from the options below(Type the option ID shown below) \n" +
 				"1 Send Money\n" +
 				"2 View Balance\n" +
 				"3 View Notifications \n" +
@@ -350,6 +365,29 @@ public class ClientHandler extends Thread {
     	 
     	 return retval;
     	
+    }
+
+    public void logUserOut()
+    {
+    	if(username != null)
+    	{
+	    	timestamp = new Timestamp(System.currentTimeMillis());
+	        System.out.println(username + " has logged out of the system at " + sdf.format(timestamp));
+
+	        try{
+		        BufferedWriter writer1 = new BufferedWriter(
+	            	new FileWriter(username+"-server", true)  //Set true for append mode
+		        );
+				writer1.newLine();   //Add new line
+				writer1.write("User logged out at " + sdf.format(timestamp));
+				writer1.close();
+
+			} 
+			catch(IOException ioe)
+			{
+				System.out.println("Exception Caught in logUserOut() : " + ioe.toString());
+			}
+		}
     }
 
 }
