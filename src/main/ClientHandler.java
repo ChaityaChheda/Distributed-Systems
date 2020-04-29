@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Map;
-
+import java.util.List;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
@@ -52,7 +52,7 @@ public class ClientHandler extends Thread {
 			username = received;
 
 			try {
-				File file = new File(username+"-server");
+				File file = new File("serverFiles/"+username+"-server");
 				if (file.createNewFile()) {
 					System.out.println("File created: " + username);
 				} 
@@ -96,7 +96,7 @@ public class ClientHandler extends Thread {
 				writer1.close();
 
 				writer1 = new BufferedWriter(
-                	new FileWriter("serverFiles/"+username+"-checkpoint", true)  //Set true for append mode
+                	new FileWriter("checkpoints/"+username+"-checkpoint", true)  //Set true for append mode
 		        );
 				writer1.newLine();   //Add new line
 				writer1.write("User signed up at " + sdf.format(timestamp));
@@ -206,17 +206,25 @@ public class ClientHandler extends Thread {
 						//roll back all actions since last check point
 						//<<
 
-						BufferedReader reader1 = new BufferedReader(new FileReader(username+"-checkpoint"));
+						BufferedReader reader1 = new BufferedReader(new FileReader("checkpoints/"+username+"-checkpoint"));
 
+						List<String> lines =  new ArrayList<String>(); 
 						String line1 = reader1.readLine();
+
 
 						System.out.println("line "+line1);
          
 						while(line1 != null){
 
-							System.out.println("line "+line1);
+							lines.add(line1);
+							line1 = reader1.readLine();
+						}
 
-							String[] words = line1.split("\\s+");
+
+						for(int i=lines.size()-1;i>=0;i--){
+							System.out.println("line "+lines.get(i));
+
+							String[] words = lines.get(i).split("\\s+");
 							if( words[0].equals("Transaction")){
 
 								String[] amt = words[3].split(":");
@@ -227,23 +235,25 @@ public class ClientHandler extends Thread {
 
 									executeTransaction(receiver,username,amount,"ErrorRecovery");
 								}
-								if( words[2].equals("received")  ){
+								else if( words[2].equals("received")  ){
 									executeTransaction(username,receiver, amount,"ErrorRecovery");
 								}
 
 							}
-							line1 = reader1.readLine();
+
 						}
 
 						System.out.println("ErrorRecovery done successfully");
-						
+						//RITWIK / KAPS FILL THIS
+
+						//>>
 
 					}
 					else
 					{
 						//erase checkpoint 
 						BufferedWriter writer1 = new BufferedWriter(
-				                new FileWriter("checkpoints/"username+"-checkpoint")
+				                new FileWriter("checkpoints/"+username+"-checkpoint")
 				        );
 						writer1.newLine();   //Add new line
 						writer1.write("");
@@ -281,13 +291,13 @@ public class ClientHandler extends Thread {
     	if(clients_map.get(sender).debit(amount, receiver,label))
     	{
     		clients_map.get(receiver).credit(amount, sender,label);
-    		clients_map.put(sender, client);
+    		clients_map.put(sender, clients_map.get(sender));
     	}
     	
     	
     	
     	BufferedWriter writer1 = new BufferedWriter(
-                new FileWriter("serverFiles/" + sender+"-server", true)  //Set true for append mode
+                new FileWriter("serverFiles/"+sender+"-server", true)  //Set true for append mode
         );
 		writer1.newLine();   //Add new line
 		writer1.write(clients_map.get(sender).getLog());
