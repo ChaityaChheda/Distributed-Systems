@@ -65,6 +65,20 @@ public class Client implements java.io.Serializable{
 	}
 
 
+	void Notify(String msg){
+
+
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+		msg = msg +" \n TimeStamp : "+ sdf.format(timestamp);
+
+		this.new_msg = this.new_msg + '-'+ msg;
+		this.log_of_transaction = msg;
+
+	}
+	
 	void credit(int amount,String user,String label){
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");

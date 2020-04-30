@@ -129,10 +129,22 @@ public class ClientHandler extends Thread {
 					String[] queries = received.split("\\s+");
 
 
-					executeTransaction(username, queries[0],Integer.parseInt(queries[1]),"Normal");
-					
+					if(!clients_map.containsKey(queries[0])){
+						sent = "Sorry but Client named "+ queries[0] +"does not exist\n\n";
+						sent = sent + getuserPrompt();
+					}
 
-					sent = "Transaction Complete.\n";
+					else if(clients_map.get(queries[0]).getIsBlocked()){
+						sent = "Sorry but "+ queries[0] +" has been blocked. You cannot perform any Transaction with this Client\n\n";
+						sent = sent + getuserPrompt();			
+
+					}
+					else{
+
+						executeTransaction(username, queries[0],Integer.parseInt(queries[1]),"Normal");
+						sent = "Transaction Complete.\n";
+						sent = sent + getuserPrompt();
+					}
 
 					sent = sent + getuserPrompt();
 					dos.writeUTF(sent);
@@ -244,10 +256,14 @@ public class ClientHandler extends Thread {
 						}
 
 						System.out.println("ErrorRecovery done successfully");
-						//RITWIK / KAPS FILL THIS
+						
+						for(Map.Entry m:clients_map.entrySet())
+				    	{   
+				    		if (!m.getKey().equals(username)){
+				    			clients_map.get(m.getKey()).Notify(username + " has been blocked\n ");
+				    		}
 
-						//>>
-
+				    	} 
 					}
 					else
 					{
@@ -267,6 +283,7 @@ public class ClientHandler extends Thread {
 				}
 				else if(received.equals("5"))
 				{
+					boolean isWritten = util.writeMaptoFile(clients_map);
 					logUserOut();
 					this.dis.close(); 
 			        this.dos.close(); 
@@ -367,8 +384,12 @@ public class ClientHandler extends Thread {
     	String retval = "";
     	for(Map.Entry m:clients_map.entrySet())
     	{   
-    		 if (!m.getKey().equals(username))
-    		 	retval = retval + m.getKey()+"\n";
+    		if (!m.getKey().equals(username)){
+    		 	if(clients_map.get(m.getKey()).getIsBlocked())
+    		 		retval = retval + m.getKey()+"-Blocked \n";
+    		 	else
+    		 		retval = retval + m.getKey()+"\n";
+    		 }
     	}  
     	 
     	 return retval;
