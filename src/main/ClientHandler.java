@@ -49,7 +49,7 @@ public class ClientHandler extends Thread {
     		
     		dos.writeUTF("Enter Your username");
 			received = dis.readUTF();
-			username = received;
+			username = received.toLowerCase();
 
 			try {
 				File file = new File("serverFiles/"+username+"-server");
@@ -128,7 +128,6 @@ public class ClientHandler extends Thread {
 					received = dis.readUTF();
 					String[] queries = received.split("\\s+");
 
-
 					if(!clients_map.containsKey(queries[0])){
 						sent = "Sorry but Client named "+ queries[0] +"does not exist\n\n";
 						sent = sent + getuserPrompt();
@@ -146,7 +145,6 @@ public class ClientHandler extends Thread {
 						sent = sent + getuserPrompt();
 					}
 
-					sent = sent + getuserPrompt();
 					dos.writeUTF(sent);
 					
 				}
@@ -195,7 +193,7 @@ public class ClientHandler extends Thread {
 					util.sendLogFile("serverFiles/"+username+"-server",dos);
 					received =  dis.readUTF();
 					System.out.println(received);
-					sent = "View "+ username +"-client File in the src directory. \nType send to transfer back the LogFile \nWarning: Any changes detected in the File will cause you to be blocked by the System !";
+					sent = "View "+ username +"-client File in the src directory. \nType \"send\" to transfer back the LogFile \nWarning: Any changes detected in the File will cause you to be blocked by the System !";
 					dos.writeUTF(sent);
 					
 					
@@ -260,13 +258,15 @@ public class ClientHandler extends Thread {
 						for(Map.Entry m:clients_map.entrySet())
 				    	{   
 				    		if (!m.getKey().equals(username)){
-				    			clients_map.get(m.getKey()).Notify(username + " has been blocked\n ");
+				    			clients_map.get(m.getKey()).Notify(username + " has been blocked. ");
 				    		}
 
 				    	} 
 					}
 					else
 					{
+						System.out.println("No Corruption found in File.");
+						sent = "Received the File, Thank You!  \n\n";
 						//erase checkpoint 
 						BufferedWriter writer1 = new BufferedWriter(
 				                new FileWriter("checkpoints/"+username+"-checkpoint")
@@ -274,7 +274,7 @@ public class ClientHandler extends Thread {
 						writer1.newLine();   //Add new line
 						writer1.write("");
 						writer1.close();
-						sent = getuserPrompt();
+						sent = sent + getuserPrompt();
 						dos.writeUTF(sent);
 					}
 					File f = new File(username+"-temp");
@@ -297,7 +297,6 @@ public class ClientHandler extends Thread {
 		{ 
 			boolean isWritten = util.writeMaptoFile(clients_map);
 	        // System.out.println("exception occured here" + isWritten); 
-	     	System.out.println("");
 	        logUserOut();
 	    } 
     }
@@ -401,7 +400,7 @@ public class ClientHandler extends Thread {
     	if(username != null)
     	{
 	    	timestamp = new Timestamp(System.currentTimeMillis());
-	        System.out.println(username + " has logged out of the system at " + sdf.format(timestamp));
+	        System.out.println("\n" + username + " has logged out of the system at " + sdf.format(timestamp));
 
 	        try{
 		        BufferedWriter writer1 = new BufferedWriter(
