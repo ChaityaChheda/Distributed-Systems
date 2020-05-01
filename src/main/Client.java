@@ -33,7 +33,7 @@ public class Client implements java.io.Serializable{
 
 		isBlocked = true;
 	}
-	boolean debit(int amount,String user){
+	boolean debit(int amount,String user,String label){
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
 
@@ -47,7 +47,16 @@ public class Client implements java.io.Serializable{
 		}
 		else{
 			this.balance = this.balance - amount;
-			log ="Transaction Successful Transfered amount:" + amount + "  to "+user+" \n TimeStamp : "+ sdf.format(timestamp);
+
+			if(label.equals("ErrorRecovery")){
+				log ="(ErrorRecovery) Transaction Successful Transfered amount:" + amount + "  to "+user+" \n TimeStamp : "+ sdf.format(timestamp);
+
+			}
+			else{
+				log ="Transaction Successful Transfered amount:" + amount + "  to "+user+" \n TimeStamp : "+ sdf.format(timestamp);
+
+			}
+
 			this.new_msg = this.new_msg + '-'+ log;
 			this.log_of_transaction =  log;
 			return true;
@@ -56,14 +65,35 @@ public class Client implements java.io.Serializable{
 	}
 
 
-	void credit(int amount,String user){
+	void Notify(String msg){
+
+
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+		msg = msg +" \n TimeStamp : "+ sdf.format(timestamp);
+
+		this.new_msg = this.new_msg + '-'+ msg;
+		this.log_of_transaction = msg;
+
+	}
+	
+	void credit(int amount,String user,String label){
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
-
+		String log = "";
 		this.balance = this.balance + amount;
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		if(label.equals("ErrorRecovery")){
+			log ="(ErrorRecovery) Transaction Successful received amount:" + amount + "  from  "+user+" \n TimeStamp : "+ sdf.format(timestamp);
+
+		}
+		else{
+			log ="Transaction Successful received amount:" + amount + "  from  "+user+" \n TimeStamp : "+ sdf.format(timestamp);
+	
+		}
 		
-		String log ="Transaction Successful received amount:" + amount + "  from  "+user+" \n TimeStamp : "+ sdf.format(timestamp);
 		this.new_msg = this.new_msg + '-'+ log;
 		this.log_of_transaction = log;
 		

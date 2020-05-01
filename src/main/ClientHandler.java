@@ -3,6 +3,8 @@ import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -10,7 +12,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Map;
-
+import java.util.List;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
@@ -50,7 +52,7 @@ public class ClientHandler extends Thread {
 			username = received;
 
 			try {
-				File file = new File(username+"-server");
+				File file = new File("serverFiles/"+username+"-server");
 				if (file.createNewFile()) {
 					System.out.println("File created: " + username);
 				} 
@@ -72,7 +74,7 @@ public class ClientHandler extends Thread {
 
 				sent = "Hello " + username + "\nWelcome back.\n";
 				BufferedWriter writer1 = new BufferedWriter(
-                	new FileWriter(username+"-server", true)  //Set true for append mode
+                	new FileWriter("serverFiles/"+username+"-server", true)  //Set true for append mode
 		        );
 				writer1.newLine();   //Add new line
 				writer1.write("User logged in at " + sdf.format(timestamp));
@@ -87,14 +89,14 @@ public class ClientHandler extends Thread {
 				sent = "Hello " + username + "\nInitiated your Bank Account.\n";
 				//File file = new File(username+"-server");
 				BufferedWriter writer1 = new BufferedWriter(
-                	new FileWriter(username+"-server", true)  //Set true for append mode
+                	new FileWriter("serverFiles/"+username+"-server", true)  //Set true for append mode
 		        );
 				writer1.newLine();   //Add new line
 				writer1.write("User signed up at " + sdf.format(timestamp));
 				writer1.close();
 
 				writer1 = new BufferedWriter(
-                	new FileWriter(username+"-checkpoint", true)  //Set true for append mode
+                	new FileWriter("checkpoints/"+username+"-checkpoint", true)  //Set true for append mode
 		        );
 				writer1.newLine();   //Add new line
 				writer1.write("User signed up at " + sdf.format(timestamp));
@@ -109,6 +111,8 @@ public class ClientHandler extends Thread {
 			while(true){
 				
 				received = dis.readUTF();
+
+				System.out.println("Client Status "+client.getIsBlocked());
 				if(client.getIsBlocked() && !received.equals("5"))
 				{
 					sent = "Sorry " + username + " you have been blocked.\n";
@@ -124,9 +128,24 @@ public class ClientHandler extends Thread {
 					received = dis.readUTF();
 					String[] queries = received.split("\\s+");
 
-					executeTransaction(queries[0],Integer.parseInt(queries[1]));
 
-					sent = "Transaction Complete.\n";
+					if(!clients_map.containsKey(queries[0])){
+						sent = "Sorry but Client named "+ queries[0] +"does not exist\n\n";
+						sent = sent + getuserPrompt();
+					}
+
+					else if(clients_map.get(queries[0]).getIsBlocked()){
+						sent = "Sorry but "+ queries[0] +" has been blocked. You cannot perform any Transaction with this Client\n\n";
+						sent = sent + getuserPrompt();			
+
+					}
+					else{
+
+						executeTransaction(username, queries[0],Integer.parseInt(queries[1]),"Normal");
+						sent = "Transaction Complete.\n";
+						sent = sent + getuserPrompt();
+					}
+
 					sent = sent + getuserPrompt();
 					dos.writeUTF(sent);
 					
@@ -142,7 +161,7 @@ public class ClientHandler extends Thread {
 					sent  = cur_balance + "\n\n";
 					
 					BufferedWriter writer1 = new BufferedWriter(
-							new FileWriter(username+"-server", true)  //Set true for append mode
+							new FileWriter("serverFiles/"+username+"-server", true)  //Set true for append mode
 						);
 					writer1.newLine();   //Add new line
 					writer1.write(cur_balance + " \n TimeStamp : "+ sdf.format(timestamp));
@@ -165,7 +184,7 @@ public class ClientHandler extends Thread {
 				else if(received.equals("4"))
 				{
 
-					File f2 = new File(username+"-server");
+					File f2 = new File("serverFiles/"+username+"-server");
 					System.out.print(f2.length());
 					
 					
@@ -173,7 +192,7 @@ public class ClientHandler extends Thread {
 					received = dis.readUTF();
 					System.out.print(received);
 					
-					util.sendLogFile(username+"-server",dos);
+					util.sendLogFile("serverFiles/"+username+"-server",dos);
 					received =  dis.readUTF();
 					System.out.println(received);
 					sent = "View "+ username +"-client File in the src directory. \nType send to transfer back the LogFile \nWarning: Any changes detected in the File will cause you to be blocked by the System !";
@@ -185,8 +204,10 @@ public class ClientHandler extends Thread {
 					
 	
 					util.saveFile(username+"-temp", dis, Integer.parseInt(received));
+
 					
-					if(!util.Compare2Files(username +"-server", username +"-temp"))
+					
+					if(!util.Compare2Files("serverFiles/"+username +"-server", username +"-temp"))
 					{
 						System.out.println("Files are unequal");
 						//block user 
@@ -197,17 +218,58 @@ public class ClientHandler extends Thread {
 						//roll back all actions since last check point
 						//<<
 
+						BufferedReader reader1 = new BufferedReader(new FileReader("checkpoints/"+username+"-checkpoint"));
 
-						//RITWIK / KAPS FILL THIS
+						List<String> lines =  new ArrayList<String>(); 
+						String line1 = reader1.readLine();
 
-						//>>
 
+						System.out.println("line "+line1);
+         
+						while(line1 != null){
+
+							lines.add(line1);
+							line1 = reader1.readLine();
+						}
+
+
+						for(int i=lines.size()-1;i>=0;i--){
+							System.out.println("line "+lines.get(i));
+
+							String[] words = lines.get(i).split("\\s+");
+							if( words[0].equals("Transaction")){
+
+								String[] amt = words[3].split(":");
+								int amount = Integer.parseInt(amt[1]);
+								String receiver = words[5];
+								System.out.println("Reverting Transaction");
+								if(words[2].equals("Transfered")){
+
+									executeTransaction(receiver,username,amount,"ErrorRecovery");
+								}
+								else if( words[2].equals("received")  ){
+									executeTransaction(username,receiver, amount,"ErrorRecovery");
+								}
+
+							}
+
+						}
+
+						System.out.println("ErrorRecovery done successfully");
+						
+						for(Map.Entry m:clients_map.entrySet())
+				    	{   
+				    		if (!m.getKey().equals(username)){
+				    			clients_map.get(m.getKey()).Notify(username + " has been blocked\n ");
+				    		}
+
+				    	} 
 					}
 					else
 					{
 						//erase checkpoint 
 						BufferedWriter writer1 = new BufferedWriter(
-				                new FileWriter(username+"-checkpoint")
+				                new FileWriter("checkpoints/"+username+"-checkpoint")
 				        );
 						writer1.newLine();   //Add new line
 						writer1.write("");
@@ -215,11 +277,13 @@ public class ClientHandler extends Thread {
 						sent = getuserPrompt();
 						dos.writeUTF(sent);
 					}
-					
+					File f = new File(username+"-temp");
+        			f.delete();
 					
 				}
 				else if(received.equals("5"))
 				{
+					boolean isWritten = util.writeMaptoFile(clients_map);
 					logUserOut();
 					this.dis.close(); 
 			        this.dos.close(); 
@@ -239,36 +303,36 @@ public class ClientHandler extends Thread {
     }
 
 
-    private synchronized void executeTransaction(String receiver,int amount) throws IOException{
+    private synchronized void executeTransaction(String sender,String receiver,int amount,String label) throws IOException{
     	
-    	if(client.debit(amount, receiver))
+    	if(clients_map.get(sender).debit(amount, receiver,label))
     	{
-    		clients_map.get(receiver).credit(amount, username);
-    		clients_map.put(username, client);
+    		clients_map.get(receiver).credit(amount, sender,label);
+    		clients_map.put(sender, clients_map.get(sender));
     	}
     	
     	
     	
     	BufferedWriter writer1 = new BufferedWriter(
-                new FileWriter(username+"-server", true)  //Set true for append mode
+                new FileWriter("serverFiles/"+sender+"-server", true)  //Set true for append mode
         );
 		writer1.newLine();   //Add new line
-		writer1.write(clients_map.get(username).getLog());
+		writer1.write(clients_map.get(sender).getLog());
 		writer1.close();
 
 		writer1 = new BufferedWriter(
-                new FileWriter(username+"-checkpoint", true)  //Set true for append mode
+                new FileWriter("checkpoints/"+sender+"-checkpoint", true)  //Set true for append mode
         );
 		writer1.newLine();   //Add new line
-		writer1.write(clients_map.get(username).getLog());
+		writer1.write(clients_map.get(sender).getLog());
 		writer1.close();
 		
-		System.out.println("Logs"+clients_map.get(username).getLog());
+		// System.out.println("Logs"+clients_map.get(username).getLog());
 		
-		System.out.println("Logs"+clients_map.get(receiver).getLog());
+		// System.out.println("Logs"+clients_map.get(receiver).getLog());
 		
 		BufferedWriter  writer = new BufferedWriter(
-                new FileWriter(receiver+"-server", true)  //Set true for append mode
+                new FileWriter("serverFiles/"+receiver+"-server", true)  //Set true for append mode
             );  
 		writer.newLine();   //Add new line
 		writer.write(clients_map.get(receiver).getLog());
@@ -276,7 +340,7 @@ public class ClientHandler extends Thread {
 		writer.close();
 
 		writer = new BufferedWriter(
-                new FileWriter(receiver+"-checkpoint", true)  //Set true for append mode
+                new FileWriter("checkpoints/"+receiver+"-checkpoint", true)  //Set true for append mode
             );  
 		writer.newLine();   //Add new line
 		writer.write(clients_map.get(receiver).getLog());
@@ -320,8 +384,12 @@ public class ClientHandler extends Thread {
     	String retval = "";
     	for(Map.Entry m:clients_map.entrySet())
     	{   
-    		 if (!m.getKey().equals(username))
-    		 	retval = retval + m.getKey()+"\n";
+    		if (!m.getKey().equals(username)){
+    		 	if(clients_map.get(m.getKey()).getIsBlocked())
+    		 		retval = retval + m.getKey()+"-Blocked \n";
+    		 	else
+    		 		retval = retval + m.getKey()+"\n";
+    		 }
     	}  
     	 
     	 return retval;
@@ -337,18 +405,12 @@ public class ClientHandler extends Thread {
 
 	        try{
 		        BufferedWriter writer1 = new BufferedWriter(
-	            	new FileWriter(username+"-server", true)  //Set true for append mode
+	            	new FileWriter("serverFiles/"+username+"-server", true)  //Set true for append mode
 		        );
 				writer1.newLine();   //Add new line
 				writer1.write("User logged out at " + sdf.format(timestamp));
 				writer1.close();
 
-				// writer1 = new BufferedWriter(
-	//          	new FileWriter(username+"-checkpoint", true)  //Set true for append mode
-	  //       );
-			// writer1.newLine();   //Add new line
-			// writer1.write("User logged out at " + sdf.format(timestamp));
-			// writer1.close();
 			} 
 			catch(IOException ioe)
 			{

@@ -46,8 +46,7 @@ public class Util {
          
         boolean areEqual = true;
          
-        int lineNum = 1;
-         
+       
         while (line1 != null || line2 != null)
         {
             if(line1 == null || line2 == null)
@@ -66,8 +65,7 @@ public class Util {
             line1 = reader1.readLine();
              
             line2 = reader2.readLine();
-             
-            lineNum++;
+           
         }
 
         reader1.close();
@@ -75,8 +73,7 @@ public class Util {
         reader2.close();
         System.out.println(areEqual);
          
-        File f = new File(file2);
-        f.delete();
+        
         
         
          

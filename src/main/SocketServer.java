@@ -27,6 +27,11 @@ public class SocketServer {
 			fileIn.close();
 			return true;
 		}
+		catch (EOFException e){
+			System.out.println("Empty map.ser file");
+			clients_map =  new HashMap<String,Client>();
+			return true;
+		}
 		catch (IOException i)
 		{
 			i.printStackTrace();
@@ -38,6 +43,7 @@ public class SocketServer {
 			c.printStackTrace();
 			return false;
 		}
+
 	}
 
 	public static void main(String[] args) throws Exception
