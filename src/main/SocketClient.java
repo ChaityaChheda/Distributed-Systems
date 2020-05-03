@@ -40,14 +40,12 @@ public class SocketClient {
 			dos.writeUTF(str_tosend);
 			
 			while(true){
-
 				str_toreceive = dis.readUTF();
 				System.out.println(str_toreceive);
 
 				boolean flag = false;
 				while(!flag)
 				{
-					System.out.println("in while loop");
 					try {
 						str_tosend = kb.readLine();
 						// Validate the command received.
@@ -67,6 +65,8 @@ public class SocketClient {
 				 
 				dos.writeUTF(str_tosend);
 
+				String isblocked = dis.readUTF();
+
 				if(str_tosend.equals("1"))
 				{
 					str_toreceive = dis.readUTF();
@@ -75,7 +75,7 @@ public class SocketClient {
 					dos.writeUTF(str_tosend);
 				}
 				
-				if (str_tosend.equals("4")){
+				if (str_tosend.equals("4")  && isblocked.equals("false")){
 					String fsize = dis.readUTF();
 					dos.writeUTF("Received the File Size: "+fsize);
 					util.saveFile(user+"-client",dis,Integer.parseInt(fsize));
