@@ -40,12 +40,14 @@ public class SocketClient {
 			dos.writeUTF(str_tosend);
 			
 			while(true){
+
 				str_toreceive = dis.readUTF();
 				System.out.println(str_toreceive);
 
 				boolean flag = false;
 				while(!flag)
 				{
+					System.out.println("in while loop");
 					try {
 						str_tosend = kb.readLine();
 						// Validate the command received.

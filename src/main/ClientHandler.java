@@ -112,7 +112,7 @@ public class ClientHandler extends Thread {
 				
 				received = dis.readUTF();
 
-				System.out.println("Client Status "+ client.getIsBlocked());
+				//System.out.println("Client Status "+ client.getIsBlocked());
 				if(client.getIsBlocked())
 				{
 					dos.writeUTF("true");
