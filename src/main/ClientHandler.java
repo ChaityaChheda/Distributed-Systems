@@ -146,7 +146,7 @@ public class ClientHandler extends Thread {
 						sent = sent + getuserPrompt();
 					}
 
-					sent = sent + getuserPrompt();
+					//sent = sent + getuserPrompt();
 					dos.writeUTF(sent);
 					
 				}

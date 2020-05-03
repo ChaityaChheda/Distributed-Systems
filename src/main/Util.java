@@ -72,50 +72,50 @@ public class Util {
          
         reader2.close();
         System.out.println(areEqual);
-         
-        
-        
-        
+    
          
         return areEqual;
         
     }
 	
 	
-synchronized void sendLogFile(String file,DataOutputStream dos) throws IOException{
-    	
-    	File f = new File(file);
-		FileInputStream fis = new FileInputStream(file);
-		byte[] buffer = new byte[(int) f.length()];
-		
-		while (fis.read(buffer) > 0) {
-			dos.write(buffer);
-		}
-		
-		fis.close();
+    synchronized void sendLogFile(String file,DataOutputStream dos) throws IOException
+    {
+        	
+        	File f = new File(file);
+    		FileInputStream fis = new FileInputStream(file);
+    		byte[] buffer = new byte[(int) f.length()];
+    		
+    		while (fis.read(buffer) > 0) {
+    			dos.write(buffer);
+    		}
+    		
+    		fis.close();
 
-    	
+        	
     }
-synchronized void saveFile(String filename,DataInputStream dis,int fsize) throws IOException{
-	
-	FileOutputStream fos = new FileOutputStream(filename);
-	byte[] buffer = new byte[4096];
-	
-	int filesize = fsize; // Send file size in separate msg
-	int read = 0;
-	int totalRead = 0;
-	int remaining = filesize;
-	while((read = dis.read(buffer, 0, Math.min(buffer.length, remaining))) > 0) {
-		totalRead += read;
-		remaining -= read;
-		System.out.println("read " + totalRead + " bytes.");
-		fos.write(buffer, 0, read);
-	}
-	System.out.println("Saved Client file");
-	fos.close();
 
 
-}
+    synchronized void saveFile(String filename,DataInputStream dis,int fsize) throws IOException{
+    	
+    	FileOutputStream fos = new FileOutputStream(filename);
+    	byte[] buffer = new byte[4096];
+    	
+    	int filesize = fsize; // Send file size in separate msg
+    	int read = 0;
+    	int totalRead = 0;
+    	int remaining = filesize;
+    	while((read = dis.read(buffer, 0, Math.min(buffer.length, remaining))) > 0) {
+    		totalRead += read;
+    		remaining -= read;
+    		System.out.println("read " + totalRead + " bytes.");
+    		fos.write(buffer, 0, read);
+    	}
+    	System.out.println("Saved Client file");
+    	fos.close();
+
+
+    }
 
 
 }

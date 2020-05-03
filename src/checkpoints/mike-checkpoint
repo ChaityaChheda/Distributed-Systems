@@ -1,0 +1,10 @@
+
+
+Transaction Successful Transfered amount:200  to dustin 
+ TimeStamp : 2020.05.02.14.33.39
+Transaction Successful Transfered amount:300  to will 
+ TimeStamp : 2020.05.02.14.33.49
+(ErrorRecovery) Transaction Successful received amount:300  from  will 
+ TimeStamp : 2020.05.02.14.36.17
+(ErrorRecovery) Transaction Successful received amount:200  from  dustin 
+ TimeStamp : 2020.05.02.14.36.17

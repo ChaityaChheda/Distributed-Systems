@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.io.*;
 
+import main.Client;
+
 
 
 public class SocketServer {
