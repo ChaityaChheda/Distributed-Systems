@@ -13,6 +13,7 @@ Among all the processes there is a daemon process, which tries to corrupt log fi
 
 ### Compiling the code : (ensure that you are in /src directory) 
 <br/>
+
 ```
 	javac main/Util.java
 	javac main/Client.java
@@ -20,19 +21,24 @@ Among all the processes there is a daemon process, which tries to corrupt log fi
 	javac main/SocketServer.java
 	javac main/SocketClient.java	
 ```
+
 <br/>
 	
 ### Running the code :
 <br/>
 Server side
 <br/>
+
 ```
 	java main.SocketServer
 ```
+
 <br/>
 Client side 
 <br/>
+
 ```
 	java main.SocketClient
 ```
+
 <br/>
