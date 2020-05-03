@@ -65,6 +65,8 @@ public class SocketClient {
 				 
 				dos.writeUTF(str_tosend);
 
+				String isblocked = dis.readUTF();
+
 				if(str_tosend.equals("1"))
 				{
 					str_toreceive = dis.readUTF();
@@ -73,7 +75,7 @@ public class SocketClient {
 					dos.writeUTF(str_tosend);
 				}
 				
-				if (str_tosend.equals("4")){
+				if (str_tosend.equals("4")  && isblocked.equals("false")){
 					String fsize = dis.readUTF();
 					dos.writeUTF("Received the File Size: "+fsize);
 					util.saveFile(user+"-client",dis,Integer.parseInt(fsize));
