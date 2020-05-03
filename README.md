@@ -8,38 +8,31 @@ Among all the processes there is a daemon process, which tries to corrupt log fi
     3. Use any error recovery approaches to go back to the previous points. (Maintain a log for this) <br/>
     4. Daemon process should be blocked.<br/>
 <br/>
-# Instructions to execute from terminal/ commandline 
+## Instructions to execute from terminal/ commandline 
 <br/>
 
-# Cloning the repository : 
+### Compiling the code : (ensure that you are in /src directory) 
 <br/>
-'''
-	git clone <url>
-'''
-<br/>
-
-# Compiling the code : (ensure that you are in /src directory) 
-<br/>
-'''
+```
 	javac main/Util.java
 	javac main/Client.java
 	javac main/ClientHandler.java
 	javac main/SocketServer.java
 	javac main/SocketClient.java	
-'''
+```
 <br/>
 	
-# Running the code :
+### Running the code :
 <br/>
 Server side
 <br/>
-'''
+```
 	java main.SocketServer
-'''
+```
 <br/>
 Client side 
 <br/>
-'''
+```
 	java main.SocketClient
-'''
+```
 <br/>
