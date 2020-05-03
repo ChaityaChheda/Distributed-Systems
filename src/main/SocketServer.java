@@ -43,7 +43,6 @@ public class SocketServer {
 			c.printStackTrace();
 			return false;
 		}
-
 	}
 
 	public static void main(String[] args) throws Exception

@@ -42,9 +42,36 @@ public class SocketClient {
 			while(true){
 				str_toreceive = dis.readUTF();
 				System.out.println(str_toreceive);
-				
-				str_tosend = kb.readLine();
+
+				boolean flag = false;
+				while(!flag)
+				{
+					try {
+						str_tosend = kb.readLine();
+						// Validate the command received.
+						while(Integer.parseInt(str_tosend) < 1 || Integer.parseInt(str_tosend) > 5)
+						{
+							System.out.println("Invalid Command. Please type the correct Option ID from the Command Prompt.");
+							str_tosend = kb.readLine();
+						}
+						flag = true;
+					} 
+					catch (NumberFormatException e)
+					{
+						System.out.println("Invalid Command. Please type the correct Option ID from the Command Prompt.");
+					}
+				}
+
+				 
 				dos.writeUTF(str_tosend);
+
+				if(str_tosend.equals("1"))
+				{
+					str_toreceive = dis.readUTF();
+					System.out.println(str_toreceive);
+					str_tosend = kb.readLine();
+					dos.writeUTF(str_tosend);
+				}
 				
 				if (str_tosend.equals("4")){
 					String fsize = dis.readUTF();
@@ -54,13 +81,18 @@ public class SocketClient {
 					str_toreceive = dis.readUTF();
 					System.out.println(str_toreceive);
 					str_tosend = kb.readLine();
-					
+					while(!str_tosend.equals("send"))
+					{
+						System.out.println("Invalid Input. Please type \"send\" to transfer the LogFile back for validation.");
+						str_tosend = kb.readLine();
+					}
 					File f3 = new File(user+"-client");
 					
 					
 					dos.writeUTF(Long.toString(f3.length()));
 					
 					str_toreceive = dis.readUTF();
+					
 					
 					util.sendLogFile(user+"-client", dos);
 				}
@@ -73,7 +105,7 @@ public class SocketClient {
 		}
 		catch(Exception e)
 		{
-			// System.out.println("Exception caught in SocketClient main() : " + e.toString());
+			System.out.println("Exception caught in SocketClient main() : " + e.toString());
 		}
 	}
 	
